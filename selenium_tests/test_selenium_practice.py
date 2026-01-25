@@ -55,29 +55,23 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-class SeleniumPracticeTests:
+class TestSeleniumPractice:
     """
     Selenium Practice Lab Test Suite
     
     This class contains all test methods for practicing Selenium automation
     with a React-based frontend application.
+    
+    Run with pytest:
+        pytest test_selenium_practice.py -v
     """
     
-    def __init__(self, base_url: str = "http://localhost:5000"):
-        """
-        Initialize the test suite.
-        
-        Args:
-            base_url: The base URL of the application to test
-        """
-        self.base_url = base_url
-        self.driver: Optional[webdriver.Chrome] = None
-        self.wait: Optional[WebDriverWait] = None
-        self.screenshots_dir = "screenshots"
-        
-        os.makedirs(self.screenshots_dir, exist_ok=True)
+    base_url = os.environ.get("BASE_URL", "http://localhost:5000")
+    driver: Optional[webdriver.Chrome] = None
+    wait: Optional[WebDriverWait] = None
+    screenshots_dir = "screenshots"
     
-    def setup(self) -> None:
+    def setup_method(self) -> None:
         """
         Set up the WebDriver with appropriate options.
         
@@ -86,6 +80,8 @@ class SeleniumPracticeTests:
         - Window size
         - Implicit wait (global)
         """
+        os.makedirs(self.screenshots_dir, exist_ok=True)
+        
         chrome_options = Options()
         chrome_options.add_argument("--window-size=1920,1080")
         chrome_options.add_argument("--disable-gpu")
@@ -100,7 +96,7 @@ class SeleniumPracticeTests:
         
         logger.info("WebDriver initialized successfully")
     
-    def teardown(self) -> None:
+    def teardown_method(self) -> None:
         """Clean up resources and close the browser."""
         if self.driver:
             self.driver.quit()
@@ -671,7 +667,7 @@ class SeleniumPracticeTests:
 
 
 def main():
-    """Main entry point for running the test suite."""
+    """Main entry point for running the test suite directly (not via pytest)."""
     import argparse
     
     parser = argparse.ArgumentParser(description="Selenium Practice Lab Test Suite")
@@ -688,10 +684,11 @@ def main():
     
     args = parser.parse_args()
     
-    tests = SeleniumPracticeTests(base_url=args.url)
+    TestSeleniumPractice.base_url = args.url
+    tests = TestSeleniumPractice()
     
     try:
-        tests.setup()
+        tests.setup_method()
         results = tests.run_all_tests()
         
         exit_code = 0 if results["failed"] == 0 else 1
@@ -701,7 +698,7 @@ def main():
         exit_code = 1
         
     finally:
-        tests.teardown()
+        tests.teardown_method()
     
     return exit_code
 

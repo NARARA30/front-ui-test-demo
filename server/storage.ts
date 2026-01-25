@@ -1,13 +1,11 @@
-import { type User, type InsertUser } from "@shared/schema";
+import { type User, type InsertUser, type ListItem } from "@shared/schema";
 import { randomUUID } from "crypto";
-
-// modify the interface with any CRUD methods
-// you might need
 
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  getItems(page: number, limit: number): ListItem[];
 }
 
 export class MemStorage implements IStorage {
@@ -32,6 +30,15 @@ export class MemStorage implements IStorage {
     const user: User = { ...insertUser, id };
     this.users.set(id, user);
     return user;
+  }
+
+  getItems(page: number, limit: number): ListItem[] {
+    const startId = (page - 1) * limit + 1;
+    return Array.from({ length: limit }, (_, i) => ({
+      id: startId + i,
+      title: `Item #${startId + i}`,
+      description: `This is a dynamically loaded item for infinite scroll testing. Item number ${startId + i}.`
+    }));
   }
 }
 

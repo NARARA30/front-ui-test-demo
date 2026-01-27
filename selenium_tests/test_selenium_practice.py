@@ -147,7 +147,8 @@ class TestSeleniumPractice:
             logger.info("Clicked load button - waiting 2 seconds for dynamic elements...")
             
             dynamic_input = WebDriverWait(self.driver, 5).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, "[data-testid='input-dynamic']"))
+                EC.presence_of_element_located((By.CSS_SELECTOR, "[data-testid='inpu
+                t-dynamic']"))
             )
             logger.info("Dynamic input appeared!")
             
